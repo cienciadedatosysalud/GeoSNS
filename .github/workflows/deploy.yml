@@ -2,10 +2,9 @@ name: Deploy Astro to GitHub Pages
 
 on:
   push:
-    branches: [ main ] # Cambia a 'master' si es el nombre de tu rama
+    branches: [ main ]
   workflow_dispatch:
 
-# Permisos requeridos para desplegar en GitHub Pages
 permissions:
   contents: read
   pages: write
@@ -23,44 +22,27 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v4
 
-      - name: Detectar gestor de paquetes
-        id: detect-package-manager
-        run: |
-          if [ -f "${{ github.workspace }}/yarn.lock" ]; then
-            echo "manager=yarn" >> $GITHUB_OUTPUT
-            echo "command=install" >> $GITHUB_OUTPUT
-            echo "runner=yarn" >> $GITHUB_OUTPUT
-            exit 0
-          elif [ -f "${{ github.workspace }}/package-lock.json" ]; then
-            echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "command=ci" >> $GITHUB_OUTPUT
-            echo "runner=npx --no-install" >> $GITHUB_OUTPUT
-            exit 0
-          else
-            echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "command=install" >> $GITHUB_OUTPUT
-            echo "runner=npx --no-install" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
       - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: ${{ steps.detect-package-manager.outputs.manager }}
+          node-version: 20
+          cache: 'npm'
 
       - name: Configurar Pages
         id: pages
         uses: actions/configure-pages@v5
 
       - name: Instalar dependencias
-        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+        run: npm ci
 
       - name: Compilar Astro
         run: |
-          ${{ steps.detect-package-manager.outputs.runner }} astro build \
+          npx astro build \
             --site "${{ steps.pages.outputs.origin }}" \
             --base "${{ steps.pages.outputs.base_path }}"
+
+      - name: Asegurar .nojekyll en dist
+        run: touch ./dist/.nojekyll
 
       - name: Subir artefacto compilado
         uses: actions/upload-pages-artifact@v3
