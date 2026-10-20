@@ -1,0 +1,33 @@
+---
+import MapViewer from '../components/MapViewer.jsx';
+const faviconUrl = `${import.meta.env.BASE_URL}logo_grupo.png`;
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoSNS</title>
+    <link rel="icon" type="image/png" href={faviconUrl} />
+    <!-- Opcional para dispositivos Apple / accesos directos móviles -->
+    <link rel="apple-touch-icon" href={faviconUrl} />
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f9f9f9;
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+  
+    <!-- Componente React renderizado solo en el cliente -->
+    <MapViewer client:only="react" />
+
+  </body>
+</html>
